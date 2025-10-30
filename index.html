@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="vi">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎮 Trò Chơi Trắc Nghiệm Tin Học Lớp 5 🖥️</title>
+  <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 50%, #00b894 100%);
+            min-height: 100%;
+            color: #2d3436;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            color: #0984e3;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .score-display {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: #fdcb6e;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #2d3436;
+            box-shadow: 0 4px 15px rgba(253, 203, 110, 0.4);
+        }
+
+        .question-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #00b894;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .question-number {
+            color: #0984e3;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            line-height: 1.5;
+            color: #2d3436;
+            margin: 0;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .answer-btn {
+            background: linear-gradient(145deg, #ffffff, #e8f4f8);
+            border: 2px solid #74b9ff;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            color: #2d3436;
+            font-weight: 500;
+        }
+
+        .answer-btn:hover {
+            background: linear-gradient(145deg, #74b9ff, #0984e3);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(116, 185, 255, 0.4);
+        }
+
+        .answer-btn.correct {
+            background: linear-gradient(145deg, #00b894, #00a085);
+            color: white;
+            border-color: #00b894;
+            animation: correctPulse 0.6s ease;
+        }
+
+        .answer-btn.incorrect {
+            background: linear-gradient(145deg, #e17055, #d63031);
+            color: white;
+            border-color: #d63031;
+            animation: shake 0.5s ease;
+        }
+
+        .answer-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            background: linear-gradient(145deg, #fdcb6e, #e17055);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(253, 203, 110, 0.4);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(253, 203, 110, 0.6);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: bold;
+            padding: 20px 40px;
+            border-radius: 15px;
+            z-index: 1000;
+            animation: feedbackPop 1s ease;
+            pointer-events: none;
+        }
+
+        .feedback.correct {
+            background: linear-gradient(145deg, #00b894, #00a085);
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 184, 148, 0.4);
+        }
+
+        .feedback.incorrect {
+            background: linear-gradient(145deg, #e17055, #d63031);
+            color: white;
+            box-shadow: 0 10px 30px rgba(225, 112, 85, 0.4);
+        }
+
+        .result-screen {
+            text-align: center;
+            padding: 40px 20px;
+            display: none;
+        }
+
+        .result-screen.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .final-score {
+            font-size: 3rem;
+            color: #0984e3;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .percentage {
+            font-size: 2rem;
+            color: #00b894;
+            margin: 15px 0;
+        }
+
+        .message {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .message.excellent {
+            background: linear-gradient(145deg, #00b894, #00a085);
+            color: white;
+        }
+
+        .message.good {
+            background: linear-gradient(145deg, #fdcb6e, #e17055);
+            color: white;
+        }
+
+        .message.try-harder {
+            background: linear-gradient(145deg, #74b9ff, #0984e3);
+            color: white;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #fdcb6e;
+            animation: confettiFall 3s linear infinite;
+            z-index: 999;
+        }
+
+        .confetti:nth-child(odd) {
+            background: #00b894;
+            animation-delay: -0.5s;
+        }
+
+        .confetti:nth-child(even) {
+            background: #74b9ff;
+            animation-delay: -1s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes feedbackPop {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .answers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .score-display {
+                position: static;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container">
+   <div class="score-display">
+    Điểm: <span id="current-score">0</span>/<span id="total-questions">10</span>
+   </div>
+   <header class="header">
+    <h1 class="title">🎮 Trắc Nghiệm Tin Học Lớp 4 🖥️</h1>
+   </header>
+   <main id="game-area">
+    <div class="question-container">
+     <div class="question-number" id="question-number">
+      Câu 1/10
+     </div>
+     <p class="question-text" id="question-text">Đang tải câu hỏi...</p>
+    </div>
+    <div class="answers-grid" id="answers-grid"><button class="answer-btn" data-answer="A">A. Đang tải...</button> <button class="answer-btn" data-answer="B">B. Đang tải...</button> <button class="answer-btn" data-answer="C">C. Đang tải...</button> <button class="answer-btn" data-answer="D">D. Đang tải...</button>
+    </div>
+    <div class="controls"><button class="control-btn" id="next-btn" disabled>Câu tiếp theo</button> <button class="control-btn" id="end-btn">Kết thúc trò chơi</button>
+    </div>
+   </main>
+   <div class="result-screen" id="result-screen">
+    <h2>🎉 Kết quả trò chơi 🎉</h2>
+    <div class="final-score" id="final-score">
+     0/10
+    </div>
+    <div class="percentage" id="percentage">
+     0%
+    </div>
+    <div class="message" id="result-message"></div><button class="control-btn" id="play-again-btn">🔄 Chơi lại</button>
+   </div>
+  </div>
+  <script>
+        // Bộ câu hỏi Tin học lớp 4 - Kết nối tri thức
+        const questions = [
+  {
+    question: "Máy tính gồm hai phần chính là gì?",
+    answers: {
+      A: "Màn hình và bàn phím",
+      B: "Phần cứng và phần mềm",
+      C: "Tệp và thư mục",
+      D: "Mạng và Internet"
+    },
+    correct: "B"
+  },
+  {
+    question: "Phần mềm là gì?",
+    answers: {
+      A: "Các linh kiện kim loại trong máy tính",
+      B: "Các chương trình và ứng dụng chạy trên máy tính",
+      C: "Dây cắm và ổ điện của máy tính",
+      D: "Màn hình cảm ứng của máy tính"
+    },
+    correct: "B"
+  },
+  {
+    question: "Bàn phím dùng để làm gì?",
+    answers: {
+      A: "Để nghe nhạc",
+      B: "Để nhập dữ liệu và gõ chữ",
+      C: "Để in tài liệu",
+      D: "Để lưu trữ dữ liệu"
+    },
+    correct: "B"
+  },
+  {
+    question: "Khi gõ bàn phím đúng cách, nên đặt hai tay như thế nào?",
+    answers: {
+      A: "Để tay lên gối",
+      B: "Để tay thẳng, ngón tay đặt trên hàng phím chính giữa",
+      C: "Để toàn bộ lòng bàn tay lên phím",
+      D: "Để cánh tay chổng lên máy tính"
+    },
+    correct: "B"
+  },
+  {
+    question: "Internet là gì?",
+    answers: {
+      A: "Hệ thống máy tính và thiết bị kết nối với nhau trên toàn thế giới",
+      B: "Một loại phần mềm gõ chữ",
+      C: "Một thiết bị phần cứng",
+      D: "Một chương trình in ấn"
+    },
+    correct: "A"
+  },
+  {
+    question: "Trang web là gì?",
+    answers: {
+      A: "Phần cứng của máy tính",
+      B: "Máy in",
+      C: "Một tập hợp các trang thông tin trên Internet",
+      D: "Ổ USB"
+    },
+    correct: "C"
+  },
+  {
+    question: "Để tìm kiếm thông tin trên Internet, ta thường sử dụng cái gì?",
+    answers: {
+      A: "Máy in",
+      B: "Trình duyệt web",
+      C: "Bàn phím số",
+      D: "Màn hình cảm ứng"
+    },
+    correct: "B"
+  },
+  {
+    question: "Tệp và thư mục dùng để làm gì?",
+    answers: {
+      A: "Để chơi game",
+      B: "Để lưu trữ và tổ chức các dữ liệu trên máy tính",
+      C: "Để gõ chữ",
+      D: "Để vẽ tranh"
+    },
+    correct: "B"
+  },
+  {
+    question: "Thư mục (folder) là gì?",
+    answers: {
+      A: "Một loại phần mềm",
+      B: "Một nơi chứa các tệp hoặc thư mục khác",
+      C: "Một phím trên bàn phím",
+      D: "Một loại máy in"
+    },
+    correct: "B"
+  },
+  {
+    question: "Việc sử dụng phần mềm khi chưa được phép bản quyền là hành vi như thế nào?",
+    answers: {
+      A: "Hợp pháp và đúng đắn",
+      B: "Vi phạm bản quyền, không đúng đạo đức",
+      C: "Không ảnh hưởng gì",
+      D: "Luôn được khuyến khích"
+    },
+    correct: "B"
+  },
+  {
+    question: "Khi tạo bài trình chiếu (slide), phần mềm nào thường được dùng?",
+    answers: {
+      A: "Máy tính để bàn",
+      B: "Bộ gõ tiếng Việt",
+      C: "Microsoft PowerPoint hoặc phần mềm tương đương",
+      D: "Máy in phun"
+    },
+    correct: "C"
+  },
+  {
+    question: "Trong bài trình chiếu, “định dạng văn bản” có nghĩa là gì?",
+    answers: {
+      A: "Chọn màu nền cho màn hình",
+      B: "Chọn kiểu chữ, màu chữ, kích thước chữ cho văn bản",
+      C: "In bài trình chiếu",
+      D: "Lưu bài trình chiếu trên USB"
+    },
+    correct: "B"
+  },
+  {
+    question: "“Hiệu ứng chuyển trang” trong slide là gì?",
+    answers: {
+      A: "Âm thanh nền",
+      B: "Hình ảnh nền",
+      C: "Hiệu ứng xuất hiện khi chuyển từ trang này sang trang khác",
+      D: "Kết nối Internet"
+    },
+    correct: "C"
+  },
+  {
+    question: "Khi soạn thảo văn bản, “chỉnh sửa văn bản” bao gồm các thao tác nào?",
+    answers: {
+      A: "Thay đổi kích thước máy tính",
+      B: "Gõ, xóa, sao chép, di chuyển đoạn văn",
+      C: "Cắm ổ USB",
+      D: "Tắt máy tính"
+    },
+    correct: "B"
+  },
+  {
+    question: "“Thực hành đa phương tiện” có thể bao gồm thao tác nào?",
+    answers: {
+      A: "Nghe nhạc, xem video, chèn hình ảnh vào bài trình chiếu",
+      B: "In văn bản đen trắng",
+      C: "Gõ chữ trên giấy",
+      D: "Tắt màn hình"
+    },
+    correct: "A"
+  },
+  {
+    question: "“Phần mềm luyện gõ bàn phím” giúp học sinh làm gì?",
+    answers: {
+      A: "Gõ chữ nhanh, đúng và thành thạo hơn",
+      B: "Lưu trữ tệp",
+      C: "Kết nối Internet",
+      D: "Vẽ tranh trên máy tính"
+    },
+    correct: "A"
+  },
+  {
+    question: "Môi trường lập trình trực quan cho học sinh tiểu học thường là gì?",
+    answers: {
+      A: "Viết mã lệnh phức tạp giống như lập trình viên chuyên nghiệp",
+      B: "Kéo-thả khối lệnh, dễ hiểu và sinh động",
+      C: "In hóa đơn",
+      D: "Xem phim"
+    },
+    correct: "B"
+  },
+  {
+    question: "Khi trò chơi máy tính yêu cầu tuân thủ nội quy về sử dụng thời gian là về chủ đề nào?",
+    answers: {
+      A: "Ứng dụng tin học",
+      B: "Đạo đức, pháp luật và văn hóa trong môi trường số",
+      C: "Tìm kiếm thông tin",
+      D: "Gõ bàn phím"
+    },
+    correct: "B"
+  },
+  {
+    question: "Máy tính không phải là:",
+    answers: {
+      A: "Một công cụ hỗ trợ học tập",
+      B: "Một nơi chứa dữ liệu",
+      C: "Một người bạn có cảm xúc như con người",
+      D: "Một thiết bị có phần cứng và phần mềm"
+    },
+    correct: "C"
+  },
+  {
+    question: "Khi lưu một tệp, chúng ta nên lưu tại đâu để dễ tìm lại?",
+    answers: {
+      A: "Trên màn hình máy tính mà không đặt tên thư mục rõ",
+      B: "Trong thư mục có tên rõ ràng và dễ hiểu",
+      C: "Ở bất cứ đâu mà quên đi",
+      D: "Trên đĩa CD đã lỗi thời"
+    },
+    correct: "B"
+  }
+];
+
+        // Biến trạng thái trò chơi
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let gameEnded = false;
+        let answered = false;
+
+        // Lấy các phần tử DOM
+        const questionNumberEl = document.getElementById('question-number');
+        const questionTextEl = document.getElementById('question-text');
+        const answersGridEl = document.getElementById('answers-grid');
+        const currentScoreEl = document.getElementById('current-score');
+        const totalQuestionsEl = document.getElementById('total-questions');
+        const nextBtnEl = document.getElementById('next-btn');
+        const endBtnEl = document.getElementById('end-btn');
+        const gameAreaEl = document.getElementById('game-area');
+        const resultScreenEl = document.getElementById('result-screen');
+        const finalScoreEl = document.getElementById('final-score');
+        const percentageEl = document.getElementById('percentage');
+        const resultMessageEl = document.getElementById('result-message');
+        const playAgainBtnEl = document.getElementById('play-again-btn');
+
+        // Khởi tạo trò chơi
+        function initGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            gameEnded = false;
+            answered = false;
+            
+            // Cập nhật hiển thị
+            totalQuestionsEl.textContent = questions.length;
+            currentScoreEl.textContent = score;
+            
+            // Hiển thị game area, ẩn result screen
+            gameAreaEl.style.display = 'block';
+            resultScreenEl.classList.remove('show');
+            
+            // Hiển thị câu hỏi đầu tiên
+            displayQuestion();
+        }
+
+        // Hiển thị câu hỏi hiện tại
+        function displayQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                endGame();
+                return;
+            }
+
+            const question = questions[currentQuestionIndex];
+            answered = false;
+
+            // Cập nhật nội dung câu hỏi
+            questionNumberEl.textContent = `Câu ${currentQuestionIndex + 1}/${questions.length}`;
+            questionTextEl.textContent = question.question;
+
+            // Cập nhật các nút trả lời
+            const answerBtns = answersGridEl.querySelectorAll('.answer-btn');
+            answerBtns.forEach((btn, index) => {
+                const letter = String.fromCharCode(65 + index); // A, B, C, D
+                btn.textContent = `${letter}. ${question.answers[letter]}`;
+                btn.className = 'answer-btn';
+                btn.disabled = false;
+                btn.dataset.answer = letter;
+            });
+
+            // Vô hiệu hóa nút "Câu tiếp theo"
+            nextBtnEl.disabled = true;
+
+            // Thêm hiệu ứng fade-in cho câu hỏi mới
+            const questionContainer = document.querySelector('.question-container');
+            questionContainer.style.animation = 'none';
+            setTimeout(() => {
+                questionContainer.style.animation = 'fadeIn 0.5s ease-in';
+            }, 10);
+        }
+
+        // Xử lý khi người chơi chọn đáp án
+        function handleAnswer(selectedAnswer) {
+            if (answered || gameEnded) return;
+            
+            answered = true;
+            const question = questions[currentQuestionIndex];
+            const isCorrect = selectedAnswer === question.correct;
+            
+            // Vô hiệu hóa tất cả nút trả lời
+            const answerBtns = answersGridEl.querySelectorAll('.answer-btn');
+            answerBtns.forEach(btn => btn.disabled = true);
+
+            // Tìm nút được chọn và nút đúng
+            const selectedBtn = document.querySelector(`[data-answer="${selectedAnswer}"]`);
+            const correctBtn = document.querySelector(`[data-answer="${question.correct}"]`);
+
+            if (isCorrect) {
+                // Trả lời đúng
+                score += 10;
+                selectedBtn.classList.add('correct');
+                showFeedback('🎉 Chính xác!', 'correct');
+                createConfetti();
+            } else {
+                // Trả lời sai
+                selectedBtn.classList.add('incorrect');
+                correctBtn.classList.add('correct');
+                showFeedback('😅 Sai rồi!', 'incorrect');
+            }
+
+            // Cập nhật điểm số
+            currentScoreEl.textContent = score;
+
+            // Kích hoạt nút "Câu tiếp theo"
+            nextBtnEl.disabled = false;
+
+            // Tự động chuyển câu sau 2 giây
+            setTimeout(() => {
+                if (!gameEnded) {
+                    nextQuestion();
+                }
+            }, 2000);
+        }
+
+        // Hiển thị phản hồi
+        function showFeedback(message, type) {
+            const feedback = document.createElement('div');
+            feedback.className = `feedback ${type}`;
+            feedback.textContent = message;
+            document.body.appendChild(feedback);
+
+            setTimeout(() => {
+                feedback.remove();
+            }, 1000);
+        }
+
+        // Tạo hiệu ứng confetti khi trả lời đúng
+        function createConfetti() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.animationDelay = Math.random() * 2 + 's';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }, i * 100);
+            }
+        }
+
+        // Chuyển sang câu tiếp theo
+        function nextQuestion() {
+            currentQuestionIndex++;
+            displayQuestion();
+        }
+
+        // Kết thúc trò chơi
+        function endGame() {
+            gameEnded = true;
+            gameAreaEl.style.display = 'none';
+            
+            // Tính toán kết quả
+            const totalQuestions = questions.length;
+            const percentage = Math.round((score / (totalQuestions * 10)) * 100);
+            
+            // Hiển thị kết quả
+            finalScoreEl.textContent = `${score}/${totalQuestions * 10}`;
+            percentageEl.textContent = `${percentage}%`;
+            
+            // Hiển thị lời khen dựa trên điểm số
+            let message, messageClass;
+            if (percentage >= 80) {
+                message = "🌟 Xuất sắc! Bạn thật giỏi Tin học! 🌟";
+                messageClass = "excellent";
+            } else if (percentage >= 50) {
+                message = "👍 Tốt lắm! Bạn đã làm rất tốt! 👍";
+                messageClass = "good";
+            } else {
+                message = "💪 Cố gắng thêm nhé! Lần sau sẽ tốt hơn! 💪";
+                messageClass = "try-harder";
+            }
+            
+            resultMessageEl.textContent = message;
+            resultMessageEl.className = `message ${messageClass}`;
+            
+            // Hiển thị màn hình kết quả
+            resultScreenEl.classList.add('show');
+            
+            // Tạo confetti nếu điểm cao
+            if (percentage >= 80) {
+                createConfetti();
+            }
+        }
+
+        // Khởi động lại trò chơi
+        function restartGame() {
+            initGame();
+        }
+
+        // Gắn sự kiện cho các nút trả lời
+        answersGridEl.addEventListener('click', (e) => {
+            if (e.target.classList.contains('answer-btn')) {
+                const selectedAnswer = e.target.dataset.answer;
+                handleAnswer(selectedAnswer);
+            }
+        });
+
+        // Gắn sự kiện cho nút "Câu tiếp theo"
+        nextBtnEl.addEventListener('click', nextQuestion);
+
+        // Gắn sự kiện cho nút "Kết thúc trò chơi"
+        endBtnEl.addEventListener('click', endGame);
+
+        // Gắn sự kiện cho nút "Chơi lại"
+        playAgainBtnEl.addEventListener('click', restartGame);
+
+        // Khởi tạo trò chơi khi trang web được tải
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99634c5347928992',t:'MTc2MTc0NzQ2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
